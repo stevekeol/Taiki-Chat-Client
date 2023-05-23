@@ -40,8 +40,9 @@ jobs:
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 6.7.1 # Notice: 选择合适的gradle版本(也可以选择current)
-          arguments: assembleRelease # Gradle参数(此处选择Release模式) # ?
-
+          # arguments: assembleRelease # Gradle参数(此处选择Release模式) # ?
+        run: ./gradlew build  
+            
       # 签名该apk
       - name: Sign the APK
         uses: r0adkll/sign-android-release@v1
