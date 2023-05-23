@@ -2,7 +2,7 @@
 #
 # How To Use
 # 1. git tag v1.0.0
-# 2. git push -tags
+# 2. git push --tags
 #
 #================================================================
 
@@ -34,7 +34,7 @@ jobs:
       # 将新版本代码构建为apk
       - uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: 4.1.0 # Notice: 选择合适的gradle版本(也可以选择current)
+          gradle-version: 6.7.1 # Notice: 选择合适的gradle版本(也可以选择current)
           arguments: assembleRelease # Gradle参数(此处选择Release模式)
 
       - uses: r0adkll/sign-android-release@v1
