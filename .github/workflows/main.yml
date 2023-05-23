@@ -41,10 +41,12 @@ jobs:
         with:
           gradle-version: 6.7.1 # Notice: 选择合适的gradle版本(也可以选择current)
           # arguments: assembleRelease # Gradle参数(此处选择Release模式) # ?
-        run: ./gradlew build  
+      
+      - name: Execute Gradle build
+        run: npx react-native run-android --variant=release && cd android && ./gradlew assembleRelease
             
       # 签名该apk
-      - name: Sign the APK
+      - name: Sign the APKs
         uses: r0adkll/sign-android-release@v1
         id: signing_app # 该id变量仅仅用于标识该步骤，以便使用产出的变量
         with:
