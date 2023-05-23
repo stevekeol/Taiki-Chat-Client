@@ -162,9 +162,9 @@ android {
         release {
             // if (project.hasProperty('TaikiChat-release-key.keystore')) {
                 // storeFile file('./TaikiChat-release-key.keystore')
-                storeFile file("/home/stevekeol/Code/Taiki-Chat/Taiki-Chat-Client/android/app/TaikiChat-release-key.keystore")
-                storePassword "taikichat-2023"
+                storeFile file("./TaikiChat-release-key.keystore")
                 keyAlias "TaikiChat-key-alias"
+                storePassword "taikichat-2023"
                 keyPassword "taikichat-2023"
             // }
         } 

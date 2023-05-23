@@ -6,7 +6,7 @@
 #
 #================================================================
 
-name: Release-Build APK
+name: Build and Release APK when push to master with a tag
 
 # 触发条件——当push到github的master分支上，且打上了以v开头的tag时，则编译为apk，并发布
 on:
@@ -24,39 +24,40 @@ jobs:
       contents: write
 
     steps:
-      # 将对应代码从git仓库中检出，放在工作目录中
+      # 1.将对应代码从git仓库中检出，放在工作目录中
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 设置NodeJS环境
+      # 2.设置NodeJS环境
       - name: Use Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '16.16.0'
   
-      # 安装依赖
+      # 3.安装npm依赖
       - name: Install Dependencies
         run: yarn
 
-      # 设置Java环境
+      # 4.设置Java环境
       - name: Setup Java Enviroment
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 11 # Notice: 确定java版本
 
-      # 将源码构建为apk
-      - name: Build APK by Gradle
+      # 5.构建APK
+      - name: Build APK by Gradle (I)
         uses: gradle/gradle-build-action@v2
         with:
           gradle-version: 6.7.1 # Notice: 选择合适的gradle版本(也可以选择current)
           # arguments: assembleRelease # Gradle参数(此处选择Release模式) # ?
       
-      - name: Execute Gradle build
+      # 6.构建APK (TODO: 思考第5步和第6步，是否有冲突重叠的地方，需要精简)
+      - name: Build APK by Gradle (II)
         run: cd android && ./gradlew assembleRelease
             
-      # 签名该apk
-      - name: Sign the APKs
+      # 7.签名该apk
+      - name: Sign the APK
         uses: r0adkll/sign-android-release@v1
         id: signing_app # 该id变量仅仅用于标识该步骤，以便使用产出的变量
         with:
@@ -69,10 +70,13 @@ jobs:
         env:
           # override default build-tools version (29.0.3) -- optional
           BUILD_TOOLS_VERSION: "29.0.3" # 30.0.2
-      # 将创建的apk改名
-      - run: mv ${{steps.signing_app.outputs.signedReleaseFile}} TaikiChat_$GITHUB_REF_NAME.apk # github定义的变量，即触发的tag内容
 
-      # 发布该apk
+      # 8.重命名该APK
+      - name: Rename the APK
+      # 将创建的apk改名
+        run: mv ${{steps.signing_app.outputs.signedReleaseFile}} TaikiChat_$GITHUB_REF_NAME.apk # github定义的变量，即触发的tag内容
+
+      # 9.发布该apk
       - name: Release the APK
         uses: ncipollo/release-action@v1
         with:
