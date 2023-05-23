@@ -1,35 +1,56 @@
+#===============================================================
+#
+# How To Use
+# 1. git tag v1.0.0
+# 2. git push -tags
+#
+#================================================================
+
 name: Release-Build APK
+
+# 触发条件——当push到github的master分支上，且打上了以v开头的tag时，则编译为apk，并发布
 on:
   push:
+    branches:
+      - master    
     tags:
       - "v*"
 
 jobs:
   build:
+    # 选择在ubuntu-latest上运行这些action指令
     runs-on: ubuntu-latest
     permissions:
       contents: write
+
     steps:
+      # 将对应代码从git仓库中检出，放在工作目录中
       - uses: actions/checkout@v3
+      # 设置java环境
       - uses: actions/setup-java@v3
         with:
           distribution: temurin
-          java-version: 11
+          java-version: 11 # Notice: 确定java版本
+      # 将新版本代码构建为apk
       - uses: gradle/gradle-build-action@v2
         with:
-          gradle-version: current
-          arguments: assembleRelease
+          gradle-version: 4.1.0 # Notice: 选择合适的gradle版本(也可以选择current)
+          arguments: assembleRelease # Gradle参数(此处选择Release模式)
+
       - uses: r0adkll/sign-android-release@v1
-        id: sign_app
+        id: signing_app # 该id变量仅仅用于标识该步骤，以便使用产出的变量
         with:
           releaseDirectory: app/build/outputs/apk/release
-          signingKeyBase64: ${{ secrets.SIGNING_KEY }}
+          # secrets中的所有常量，都需要在github的仓库配置中注明
+          signingKeyBase64: ${{ secrets.SIGNING_KEY }} 
           alias: ${{ secrets.ALIAS }}
           keyStorePassword: ${{ secrets.KEY_STORE_PASSWORD }}
           keyPassword: ${{ secrets.KEY_PASSWORD }}
-      - run: mv ${{steps.sign_app.outputs.signedReleaseFile}} LittleGooseOffice_$GITHUB_REF_NAME.apk
+      # 将创建的apk改名
+      - run: mv ${{steps.signing_app.outputs.signedReleaseFile}} TaikiChat_$GITHUB_REF_NAME.apk # github定义的变量，即触发的tag内容
+
       - uses: ncipollo/release-action@v1
         with:
           artifacts: "*.apk"
-          token: ${{ github.token }}
+          token: ${{ github.token }} # 这也是内置变量
           generateReleaseNotes: true
