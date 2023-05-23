@@ -28,14 +28,24 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      # 设置java环境
+      # 设置NodeJS环境
+      - name: Use Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16.16.0'
+  
+      # 安装依赖
+      - name: Install Dependencies
+        run: yarn
+
+      # 设置Java环境
       - name: Setup Java Enviroment
         uses: actions/setup-java@v3
         with:
           distribution: temurin
           java-version: 11 # Notice: 确定java版本
 
-      # 将新版本代码构建为apk
+      # 将源码构建为apk
       - name: Build APK by Gradle
         uses: gradle/gradle-build-action@v2
         with:
