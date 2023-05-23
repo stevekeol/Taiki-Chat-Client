@@ -43,7 +43,7 @@ jobs:
           # arguments: assembleRelease # Gradle参数(此处选择Release模式) # ?
       
       - name: Execute Gradle build
-        run: npx react-native run-android --variant=release && cd android && ./gradlew assembleRelease
+        run: cd android && ./gradlew assembleRelease
             
       # 签名该apk
       - name: Sign the APKs
